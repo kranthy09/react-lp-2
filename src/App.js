@@ -6,6 +6,16 @@ import AppointmentInfo from "./components/AppointmentInfo";
 
 function App() {
   let [appointmentList, setAppointmentList] = useState([]);
+  let [query, setQuery] = useState("");
+  const filteredAppointmentList = appointmentList.filter(
+    item => {
+      return (
+        item.petName.toLowerCase().includes(query.toLowerCase()) ||
+        item.ownerName.toLowerCase().includes(query.toLowerCase()) ||
+        item.aptNotes.toLowerCase().includes(query.toLowerCase())
+      )
+    }
+  )
   const fetchData = useCallback(() => {
     fetch('./data.json')
       .then(response => response.json())
@@ -21,9 +31,9 @@ function App() {
     <div className="App contaier mx-auto mt-3 font-thin">
       <h1 className="text-5xl mb-3"><BiCalendar className="inline-block text-red-400 align-top" />Your Appointments</h1>
       <AddAppointment />
-      <Search />
+      <Search query={query} onQueryChange={(myQuery) => setQuery(myQuery)}/>
       <ul className="divide-y divide-gray-200">
-        {appointmentList.map(appointment => (
+        {filteredAppointmentList.map(appointment => (
           <AppointmentInfo key={appointment.id} 
           appointment={appointment}
           onDeleteAppointment={
